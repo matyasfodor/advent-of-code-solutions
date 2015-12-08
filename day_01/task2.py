@@ -1,4 +1,4 @@
-from input_data import input_data
+from .input_data import input_data
 
 
 def solution():
