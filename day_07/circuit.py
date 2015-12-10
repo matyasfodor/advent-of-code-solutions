@@ -26,22 +26,29 @@ class Connection:
     def get_operands(self):
         return [operand for operand in [self.left_hand_operand, self.right_hand_operand] if isinstance(operand, basestring)]
 
+    def get_left_hand_operand_value(self, solved_operands):
+        if isinstance(self.left_hand_operand, basestring):
+            return solved_operands[self.left_hand_operand]
+        return self.left_hand_operand
+
+    def get_right_hand_opernad_value(self, solved_operands):
+        if isinstance(self.right_hand_operand, basestring):
+            return solved_operands[self.right_hand_operand]
+        return self.right_hand_operand
+
     def evaluate(self, solved_operands):
         if self.operator == NEGATION:
-            return ~solved_operands.get(self.right_hand_operand, self.right_hand_operand)
+            return ~self.get_right_hand_opernad_value(solved_operands)
         if self.operator == AND:
-            return solved_operands.get(self.left_hand_operand, self.left_hand_operand) & solved_operands.get(self.right_hand_operand, self.right_hand_operand)
+            return self.get_left_hand_operand_value(solved_operands) & self.get_right_hand_opernad_value(solved_operands)
         if self.operator == OR:
-            return solved_operands.get(self.left_hand_operand, self.left_hand_operand) | solved_operands.get(self.right_hand_operand, self.right_hand_operand)
+            return self.get_left_hand_operand_value(solved_operands) | self.get_right_hand_opernad_value(solved_operands)
         if self.operator == LSHIFT:
-            return solved_operands.get(self.left_hand_operand, self.left_hand_operand) << self.right_hand_operand
+            return self.get_left_hand_operand_value(solved_operands) << self.right_hand_operand
         if self.operator == RSHIFT:
-            return solved_operands.get(self.left_hand_operand, self.left_hand_operand) >> self.right_hand_operand
+            return self.get_left_hand_operand_value(solved_operands) >> self.right_hand_operand
         if self.operator == NOTHING:
-            return solved_operands.get(self.left_hand_operand, self.left_hand_operand)
-
-    def __str__(self):
-        return str(self.left_hand_operand if self.left_hand_operand else '') + str(self.operator) + str(self.right_hand_operand if self.right_hand_operand else '')
+            return self.get_left_hand_operand_value(solved_operands)
 
     @staticmethod
     def parse_from_parts(*args):
@@ -62,9 +69,7 @@ class Connection:
 
 
 def parse_instruction(line):
-    left_hand, right_hand = line.split(' -> ')
-
-    target = right_hand
+    left_hand, target = line.split(' -> ')
 
     left_hand_parts = left_hand.split(' ')
 
@@ -87,7 +92,7 @@ class Circuit:
                         self.connections_by_output[key] = value.evaluate(solved_operands)
         return self.connections_by_output[wire]
 
-    def setValue(self, key, value):
+    def set_value(self, key, value):
         self.connections_by_output[key] = value
 
     @staticmethod
