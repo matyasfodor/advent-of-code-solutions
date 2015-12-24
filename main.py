@@ -6,6 +6,7 @@ import day_05
 import day_06
 import day_07
 import day_08
+import day_09
 
 # assert day_01.task1.solution() == 280
 # assert day_01.task2.solution() == 1797
@@ -21,5 +22,6 @@ import day_08
 # assert day_06.task2.solution() == 14110788
 # assert day_07.task1.solution() == 16076
 # assert day_07.task2.solution() == 2797
-assert day_08.task1.solution() == 1350
-assert day_08.task2.solution() == 2085
+# assert day_08.task1.solution() == 1350
+# assert day_08.task2.solution() == 2085
+print day_09.task1.solution()
