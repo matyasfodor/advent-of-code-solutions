@@ -1,5 +1,5 @@
+from heapq import heappush, heappop
 from input_data import input_data
-from itertools import permutations
 
 
 def parse_line(line):
@@ -19,37 +19,55 @@ def get_cities_and_distances():
     return cities, distances
 
 
-def unique_cyclic_permutations(iterable):
-    for permutation in permutations(iterable[1:]):
-        yield (iterable[0],) + permutation
+def compute_distances(visited, distances):
+    distance = 0
+    for origin, destination in zip(visited, visited[1:]):
+        if origin in distances and destination in distances[origin]:
+            distance += distances[origin][destination]
+        else:
+            return None
+    return distance
+
+
+def get_start_and_stop_cities(distances):
+    start_city = None
+    stop_city = None
+
+    sources = set(distances.keys())
+    targets = set([target for source in distances.values() for target in source.keys()])
+    only_sources = sources - targets
+
+    if len(only_sources) == 1:
+        start_city = list(only_sources)[0]
+
+    only_targets = targets - sources
+
+    if len(only_targets) == 1:
+        stop_city = list(only_targets)[0]
+
+    return start_city, stop_city
 
 
 def solution():
     cities, distances = get_cities_and_distances()
-    min_distance = float('inf')
+    start_city, stop_city = get_start_and_stop_cities(distances)
+    print start_city, stop_city
 
-    for permutation in unique_cyclic_permutations(list(cities)):
-        permutation_distances = []
-        number_of_skips = 0
-        for origin, destination in zip(permutation, permutation[1:] + (permutation[0],)):
-            if origin in distances and destination in distances[origin]:
-                permutation_distances.append(distances[origin][destination])
-            else:
-                number_of_skips += 1
+    city_distances = {city: float('inf') for city in cities}
+    city_distances[start_city] = 0
+    fringe = [start_city]
 
-        if number_of_skips > 1:
+    while len(fringe) > 0:
+        actual = heappop(fringe)
+
+        if actual not in distances:
             continue
 
-        if len(permutation_distances) == len(cities):
-            min_distance_for_permutation = sum(permutation_distances) - max(permutation_distances)
-        else:
-            min_distance_for_permutation = sum([permutation_distance for permutation_distance in permutation_distances if permutation_distance is not None])
+        neighbours = distances[actual].keys()
+        for neighbour in neighbours:
+            neighbour_absolute_distance = city_distances[actual] + distances[actual][neighbour]
+            if neighbour_absolute_distance < city_distances[neighbour]:
+                city_distances[neighbour] = neighbour_absolute_distance
+                heappush(fringe, neighbour)
 
-        min_distance = min_distance_for_permutation if min_distance_for_permutation < min_distance else min_distance
-
-        print min_distance_for_permutation
-        print permutation
-        print permutation_distances
-        print '#' * 16
-
-    return min_distance
+    return city_distances[stop_city]
