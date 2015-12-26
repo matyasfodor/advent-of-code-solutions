@@ -48,26 +48,29 @@ def get_start_and_stop_cities(distances):
     return start_city, stop_city
 
 
+def fist_f(start, target, distances, city_distances, visited):
+    visited.add(start)
+    if start not in distances:
+        print 'YAAAAY\t', start
+        return
+
+    for neighbour in distances[start].keys():
+        if neighbour not in visited:
+            absolute_distance = city_distances[start] + distances[start][neighbour]
+            if neighbour == target:
+                if len(visited) == len(city_distances) - 1:
+                    yield absolute_distance
+            elif absolute_distance < city_distances[neighbour]:
+                city_distances[neighbour] = absolute_distance
+                for solution_ in fist_f(neighbour, target, distances, city_distances.copy(), visited.copy()):
+                    yield solution_
+    return
+
+
 def solution():
     cities, distances = get_cities_and_distances()
     start_city, stop_city = get_start_and_stop_cities(distances)
     print start_city, stop_city
-
     city_distances = {city: float('inf') for city in cities}
     city_distances[start_city] = 0
-    fringe = [start_city]
-
-    while len(fringe) > 0:
-        actual = heappop(fringe)
-
-        if actual not in distances:
-            continue
-
-        neighbours = distances[actual].keys()
-        for neighbour in neighbours:
-            neighbour_absolute_distance = city_distances[actual] + distances[actual][neighbour]
-            if neighbour_absolute_distance < city_distances[neighbour]:
-                city_distances[neighbour] = neighbour_absolute_distance
-                heappush(fringe, neighbour)
-
-    return city_distances[stop_city]
+    return min(fist_f(start_city, stop_city, distances, city_distances.copy(), set()))
