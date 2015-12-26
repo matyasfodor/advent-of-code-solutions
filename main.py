@@ -24,4 +24,5 @@ import day_09
 # assert day_07.task2.solution() == 2797
 # assert day_08.task1.solution() == 1350
 # assert day_08.task2.solution() == 2085
-print day_09.task1.solution()
+assert day_09.task1.solution() == 207
+print day_09.task2.solution()
