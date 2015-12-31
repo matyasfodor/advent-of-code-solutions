@@ -16,6 +16,7 @@ import day_15
 import day_16
 import day_17
 import day_18
+import day_19
 
 assert day_01.task1.solution() == 280
 assert day_01.task2.solution() == 1797
@@ -53,4 +54,5 @@ assert day_17.task1.solution() == 1638
 assert day_17.task2.solution() == 17
 assert day_18.task1.solution() == 768
 assert day_18.task2.solution() == 781
-
+assert day_19.task1.solution() == 535
+assert day_19.task2.solution() == 212
